@@ -37,6 +37,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          rel="stylesheet"
+        />
       </head>
       <body className="min-h-screen pb-32">
         <Header />

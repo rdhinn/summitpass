@@ -68,12 +68,6 @@ export default function TrailMap() {
       return;
     }
 
-    // Load Leaflet CSS
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(link);
-
     // Load Leaflet JS
     const script = document.createElement("script");
     script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
@@ -84,9 +78,8 @@ export default function TrailMap() {
     document.body.appendChild(script);
 
     return () => {
-      // Clean up link and script tags if unmounted before loading
+      // Clean up script tag if unmounted before loading
       try {
-        document.head.removeChild(link);
         document.body.removeChild(script);
       } catch (e) {}
     };
