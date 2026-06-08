@@ -17,7 +17,7 @@ export default function MountPrauPage() {
         <img
           alt="Gunung Prau"
           className="absolute inset-0 w-full h-full object-cover"
-          src="https://images.unsplash.com/photo-1596701062351-df5f8a42f3c5?auto=format&fit=crop&w=1200&q=80"
+          src="/images/prau.jpg"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-black/20 to-black/40"></div>
 
