@@ -184,8 +184,8 @@ export default function RegisterBookingPage() {
         return;
       }
 
-      // Redirect to confirmation with booking ID
-      router.push(`/booking/confirmation?bookingId=${data.booking.booking_id}`);
+      // Redirect to payment with booking ID
+      router.push(`/booking/payment?bookingId=${data.booking.booking_id}`);
     } catch (err) {
       setSubmitLoading(false);
       setErrorMessage("Koneksi gagal. Silakan periksa database Anda.");
