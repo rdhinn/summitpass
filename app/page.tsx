@@ -150,7 +150,7 @@ export default function HomePage() {
                     Harga mulai dari
                   </span>
                   <span className="text-primary font-black text-3xl">
-                    Rp1.800.000
+                    Rp650.000
                     <span className="text-sm font-medium text-on-surface-variant">
                       /org
                     </span>
