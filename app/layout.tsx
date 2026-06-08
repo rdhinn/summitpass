@@ -33,6 +33,11 @@ export default function RootLayout({
       className={`${plusJakarta.variable} ${inter.variable} antialiased`}
     >
       <head>
+        <meta name="theme-color" content="#2d5a27" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/images/logo.png" />
+        <link rel="manifest" href="/manifest.json" />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
@@ -46,6 +51,21 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <BottomNav />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    console.log('PWA ServiceWorker registered successfully:', reg.scope);
+                  }).catch(function(err) {
+                    console.error('PWA ServiceWorker registration failed:', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
