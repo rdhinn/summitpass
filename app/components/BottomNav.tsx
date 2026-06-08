@@ -7,16 +7,28 @@ import { useEffect, useState } from "react";
 export default function BottomNav() {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAuth = () => {
-      setIsLoggedIn(!!localStorage.getItem("summitpass_user"));
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setIsLoggedIn(true);
+          setIsAdmin(data.role === "admin");
+        } else {
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+        }
+      } catch (e) {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+      }
     };
     checkAuth();
-    window.addEventListener("storage", checkAuth);
     window.addEventListener("summitpass_auth", checkAuth);
     return () => {
-      window.removeEventListener("storage", checkAuth);
       window.removeEventListener("summitpass_auth", checkAuth);
     };
   }, []);
@@ -30,7 +42,7 @@ export default function BottomNav() {
       label: "Pemesanan",
     },
     { 
-      href: isLoggedIn ? "/dashboard" : "/register", 
+      href: isLoggedIn ? (isAdmin ? "/admin/dashboard" : "/dashboard") : "/register", 
       icon: "person", 
       label: isLoggedIn ? "Dashboard" : "Daftar" 
     },

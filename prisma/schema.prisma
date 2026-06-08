@@ -1,0 +1,86 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  user_id        String         @id @default(uuid())
+  nama           String
+  email          String         @unique
+  no_hp          String
+  password       String
+  tanggal_daftar DateTime       @default(now())
+  status_akun    String         @default("Aktif")
+  profile        HikerProfile?
+  bookings       Booking[]
+  notifications  Notification[]
+
+  @@map("users")
+}
+
+model HikerProfile {
+  profile_id     String @id @default(uuid())
+  user_id        String @unique
+  user           User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  no_ktp         String
+  tanggal_lahir  String
+  golongan_darah String
+  kontak_darurat String
+
+  @@map("hiker_profiles")
+}
+
+model Mountain {
+  mountain_id String    @id @default(uuid())
+  name        String
+  location    String
+  height      Int
+  price       Int
+  quota       Int
+  difficulty  String
+  bookings    Booking[]
+
+  @@map("mountains")
+}
+
+model Booking {
+  booking_id   String   @id @default(uuid())
+  user_id      String
+  user         User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  mountain_id  String
+  mountain     Mountain @relation(fields: [mountain_id], references: [mountain_id])
+  booking_date DateTime
+  status       String   @default("Pending") // Pending, Diproses, Selesai
+  total_price  Int
+  created_at   DateTime @default(now())
+  hikers       String // Array of hikers serialized as JSON string: [{ nama, no_ktp, no_hp, kontak_darurat }]
+
+  @@map("bookings")
+}
+
+model Notification {
+  notification_id String   @id @default(uuid())
+  user_id         String
+  user            User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  title           String
+  message         String
+  is_read         Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model Admin {
+  admin_id   String   @id @default(uuid())
+  username   String   @unique
+  password   String
+  email      String   @unique
+  nama       String
+  created_at DateTime @default(now())
+
+  @@map("admins")
+}

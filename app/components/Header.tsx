@@ -5,36 +5,32 @@ import { useEffect, useState } from "react";
 
 export default function Header() {
   const [userName, setUserName] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-  useEffect(() => {
-    // Check if user is registered in localStorage
-    const storedUser = localStorage.getItem("summitpass_user");
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        setUserName(user.nama);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // Listen to changes in auth state (for local updates)
-    const handleAuthChange = () => {
-      const updatedUser = localStorage.getItem("summitpass_user");
-      if (updatedUser) {
-        setUserName(JSON.parse(updatedUser).nama);
+  const checkAuth = async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        setUserName(data.user.nama);
+        setIsAdmin(data.role === "admin");
       } else {
         setUserName(null);
+        setIsAdmin(false);
       }
-    };
+    } catch (e) {
+      setUserName(null);
+      setIsAdmin(false);
+    }
+  };
 
-    window.addEventListener("storage", handleAuthChange);
-    // Add custom event listener for immediate updates on same window
-    window.addEventListener("summitpass_auth", handleAuthChange);
+  useEffect(() => {
+    checkAuth();
 
+    // Listen to custom event for immediate session updates
+    window.addEventListener("summitpass_auth", checkAuth);
     return () => {
-      window.removeEventListener("storage", handleAuthChange);
-      window.removeEventListener("summitpass_auth", handleAuthChange);
+      window.removeEventListener("summitpass_auth", checkAuth);
     };
   }, []);
 
@@ -53,7 +49,7 @@ export default function Header() {
       
       <div className="flex items-center gap-4">
         {userName ? (
-          <Link href="/dashboard" className="flex items-center gap-2 group">
+          <Link href={isAdmin ? "/admin/dashboard" : "/dashboard"} className="flex items-center gap-2 group">
             <span className="hidden md:inline text-sm font-semibold text-primary">
               Halo, {userName.split(" ")[0]}
             </span>

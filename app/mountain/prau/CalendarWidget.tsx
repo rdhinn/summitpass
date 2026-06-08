@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type DayStatus = "available" | "full" | "past" | "selected";
 
@@ -37,6 +37,10 @@ function generateCalendarDays(selectedDay: number): CalendarDay[] {
 export default function CalendarWidget() {
   const [selectedDay, setSelectedDay] = useState(6);
   const days = generateCalendarDays(selectedDay);
+
+  useEffect(() => {
+    localStorage.setItem("summitpass_booking_date", `2024-09-${selectedDay.toString().padStart(2, "0")}`);
+  }, [selectedDay]);
 
   return (
     <section className="bg-white rounded-xl overflow-hidden card-shadow border border-surface-variant/30">
