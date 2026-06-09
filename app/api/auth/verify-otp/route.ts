@@ -13,10 +13,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "ID User dan Kode OTP harus diisi!" }, { status: 400 });
     }
 
-    if (otpCode !== "123456") {
-      return NextResponse.json({ message: "Kode OTP salah! Gunakan kode dummy: 123456" }, { status: 400 });
-    }
-
     // Verify user exists
     const user = await prisma.user.findUnique({
       where: { user_id: userId },
@@ -25,6 +21,41 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ message: "User tidak ditemukan!" }, { status: 404 });
     }
+
+    // Look for the latest unverified OTP code for this user
+    const latestOtp = await prisma.otp.findFirst({
+      where: {
+        user_id: userId,
+        verified: false,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    if (!latestOtp) {
+      return NextResponse.json({ 
+        message: "Kode OTP tidak ditemukan atau sudah kadaluarsa. Silakan klik kirim ulang OTP." 
+      }, { status: 400 });
+    }
+
+    // Check if correct
+    if (latestOtp.code !== otpCode) {
+      return NextResponse.json({ message: "Kode OTP yang Anda masukkan salah!" }, { status: 400 });
+    }
+
+    // Check if expired
+    if (new Date(latestOtp.expires_at).getTime() < Date.now()) {
+      return NextResponse.json({ 
+        message: "Kode OTP sudah kadaluarsa (melebihi 5 menit). Silakan kirim ulang OTP." 
+      }, { status: 400 });
+    }
+
+    // Mark OTP as verified
+    await prisma.otp.update({
+      where: { id: latestOtp.id },
+      data: { verified: true },
+    });
 
     // Update user status to Aktif
     const updatedUser = await prisma.user.update({

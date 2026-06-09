@@ -41,6 +41,26 @@ export default function RegisterBookingPage() {
   // Team Members State
   const [teamMembers, setTeamMembers] = useState<Hiker[]>([]);
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [remainingQuota, setRemainingQuota] = useState<number | null>(null);
+
+  // Fetch real-time sisa kuota with 30s auto-refresh
+  useEffect(() => {
+    const fetchLiveQuota = async () => {
+      try {
+        const res = await fetch("/api/mountains/prau/realtime");
+        if (res.ok) {
+          const data = await res.json();
+          setRemainingQuota(data.remaining_quota);
+        }
+      } catch (e) {
+        console.error("Failed to fetch live quota:", e);
+      }
+    };
+
+    fetchLiveQuota();
+    const interval = setInterval(fetchLiveQuota, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const initBookingPage = async () => {
@@ -247,6 +267,21 @@ export default function RegisterBookingPage() {
           </div>
         </div>
       </div>
+
+      {/* Live Quota Alert Banner */}
+      {remainingQuota !== null && (
+        <div className="mb-8 bg-primary/5 border border-primary/20 p-4 rounded-2xl flex items-center justify-between text-xs font-bold text-secondary animate-fade-in-up">
+          <span className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[14px] animate-pulse text-error">sensors</span>
+            <span>STATUS LIVE: Sisa kuota pendakian untuk hari ini tersisa <strong>{remainingQuota} orang</strong>.</span>
+          </span>
+          {remainingQuota < 10 && remainingQuota > 0 && (
+            <span className="bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider animate-pulse">
+              Kuota Menipis!
+            </span>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleBookingSubmit} className="space-y-8">
         {errorMessage && (

@@ -19,8 +19,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Password minimal harus 6 karakter!" }, { status: 400 });
     }
 
-    if (no_hp.length < 10) {
-      return NextResponse.json({ message: "Nomor HP minimal harus 10 digit!" }, { status: 400 });
+    const { isValidIndonesianPhoneNumber, sendWhatsAppOTP } = require("@/app/lib/whatsapp");
+    if (!isValidIndonesianPhoneNumber(no_hp)) {
+      return NextResponse.json({ 
+        message: "Nomor WhatsApp tidak valid! Gunakan format nomor Indonesia yang benar (e.g., 08xxxxxxxxxx)." 
+      }, { status: 400 });
     }
 
     // Check if user already exists in User table
@@ -46,8 +49,27 @@ export async function POST(request: Request) {
       },
     });
 
+    // Generate 6-digit OTP code
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    // Save to Otp table
+    await prisma.otp.create({
+      data: {
+        user_id: newUser.user_id,
+        code: otpCode,
+        expires_at: expiresAt,
+        verified: false,
+      },
+    });
+
+    // Send OTP via WhatsApp
+    const sendResult = await sendWhatsAppOTP(newUser.no_hp, otpCode);
+
     return NextResponse.json({
-      message: "Registrasi berhasil! OTP dikirim.",
+      message: sendResult.success 
+        ? "Registrasi berhasil! Kode OTP telah dikirim ke WhatsApp Anda." 
+        : `Registrasi berhasil! OTP tersimpan tetapi gagal mengirim WhatsApp: ${sendResult.error}`,
       user: {
         user_id: newUser.user_id,
         nama: newUser.nama,
@@ -55,6 +77,8 @@ export async function POST(request: Request) {
         no_hp: newUser.no_hp,
         status_akun: newUser.status_akun,
       },
+      provider: sendResult.provider,
+      otpCode: process.env.NODE_ENV !== "production" ? otpCode : undefined,
     });
   } catch (error) {
     console.error("Register API error:", error);
