@@ -39,6 +39,7 @@ export default function RegisterFlow() {
   // Saved User ID after Step 1
   const [userId, setUserId] = useState("");
   const [tanggalDaftar, setTanggalDaftar] = useState("");
+  const [simulatedOtp, setSimulatedOtp] = useState("");
 
   // OTP Timer countdown
   useEffect(() => {
@@ -136,6 +137,11 @@ export default function RegisterFlow() {
       }
 
       setUserId(data.user.user_id);
+      if (data.otpCode) {
+        setSimulatedOtp(data.otpCode);
+      } else {
+        setSimulatedOtp("");
+      }
       setTanggalDaftar(
         new Date().toLocaleDateString("id-ID", {
           day: "numeric",
@@ -184,11 +190,34 @@ export default function RegisterFlow() {
   };
 
   // Handle Resend OTP
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setResendTimer(60);
     setOtpCode("");
     setOtpError("");
-    alert("Simulasi: Kode OTP baru telah dikirim via WhatsApp ke " + noHp + " (Gunakan kode: 123456)");
+    setIsValidating(true);
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json();
+      setIsValidating(false);
+      if (res.ok) {
+        if (data.otpCode) {
+          setSimulatedOtp(data.otpCode);
+          alert("Simulasi: Kode OTP baru telah dikirim via WhatsApp ke " + noHp + ` (Gunakan kode: ${data.otpCode})`);
+        } else {
+          setSimulatedOtp("");
+          alert("Kode OTP baru telah dikirim via WhatsApp ke " + noHp);
+        }
+      } else {
+        setOtpError(data.message || "Gagal mengirim ulang OTP.");
+      }
+    } catch (err) {
+      setIsValidating(false);
+      setOtpError("Terjadi kesalahan koneksi server saat mengirim ulang OTP.");
+    }
   };
 
   // Validate and submit Step 4 (Complete Hiker Profile Form)
@@ -485,10 +514,12 @@ export default function RegisterFlow() {
                   <p className="text-sm text-on-surface-variant mt-2">
                     Masukkan 6 digit kode OTP yang kami kirimkan ke nomor WhatsApp <span className="font-bold text-on-surface">{noHp}</span>.
                   </p>
-                  <div className="mt-2 inline-flex items-center gap-1.5 bg-secondary-container/40 text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
-                    <span className="material-symbols-outlined text-xs">info</span>
-                    Simulasi OTP: Gunakan kode <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-secondary-container">123456</span>
-                  </div>
+                  {(!process.env.NODE_ENV || process.env.NODE_ENV !== "production" || simulatedOtp) && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 bg-secondary-container/40 text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
+                      <span className="material-symbols-outlined text-xs">info</span>
+                      Simulasi OTP: Gunakan kode <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-secondary-container">{simulatedOtp || "123456"}</span>
+                    </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleOtpVerify} className="space-y-6">
