@@ -141,7 +141,7 @@ function PaymentContent() {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-6 pt-32 pb-24 flex flex-col animate-fadeIn">
+    <div className="w-full max-w-4xl mx-auto px-6 pt-32 pb-24 flex flex-col animate-fade-in">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-black font-headline text-primary uppercase tracking-wide">
@@ -156,7 +156,7 @@ function PaymentContent() {
         {/* Left Side: Payment Form & Instructions */}
         <div className="md:col-span-7 space-y-6">
           {/* Tabs */}
-          <div className="bg-white rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm interactive-card">
             <div className="flex border-b border-outline-variant/20">
               <button
                 type="button"
@@ -199,7 +199,7 @@ function PaymentContent() {
                           key={bank.id}
                           type="button"
                           onClick={() => setSelectedBank(bank.id)}
-                          className={`py-3 rounded-xl border text-xs font-black transition-all cursor-pointer ${
+                          className={`py-3 rounded-xl border text-xs font-black transition-all cursor-pointer interactive-btn ${
                             selectedBank === bank.id
                               ? "border-primary bg-primary/5 text-primary shadow-sm"
                               : "border-outline-variant/50 text-secondary/70 hover:border-primary/50"
@@ -304,7 +304,7 @@ function PaymentContent() {
             <button
               type="submit"
               disabled={isSubmitting || !receiptFile}
-              className={`w-full py-4 rounded-xl font-black text-sm text-white shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`w-full py-4 rounded-xl font-black text-sm text-white shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer interactive-btn ${
                 isSubmitting || !receiptFile
                   ? "bg-outline-variant/65 cursor-not-allowed"
                   : "forest-gradient hover:opacity-95 active:scale-95"
@@ -327,7 +327,7 @@ function PaymentContent() {
 
         {/* Right Side: Invoice Summary */}
         <div className="md:col-span-5">
-          <div className="bg-surface-container-low rounded-3xl p-6 border border-outline-variant/20 shadow-sm space-y-6 relative overflow-hidden">
+          <div className="bg-surface-container-low rounded-3xl p-6 border border-outline-variant/20 shadow-sm space-y-6 relative overflow-hidden interactive-card animate-fade-in-up">
             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12"></div>
             <h2 className="text-xs font-bold text-secondary uppercase tracking-[0.1rem] border-b border-outline-variant/20 pb-2">
               Ringkasan Tagihan

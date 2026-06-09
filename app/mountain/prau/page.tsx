@@ -13,7 +13,7 @@ export default function MountPrauPage() {
   return (
     <div className="pt-16 pb-32">
       {/* Hero Section */}
-      <section className="relative h-[480px] w-full overflow-hidden">
+      <section className="relative h-[480px] w-full overflow-hidden animate-fade-in">
         <img
           alt="Gunung Prau"
           className="absolute inset-0 w-full h-full object-cover"
@@ -57,7 +57,7 @@ export default function MountPrauPage() {
       {/* Content Canvas */}
       <div className="px-6 -mt-8 relative z-10 space-y-8 max-w-5xl mx-auto">
         {/* Overview Bento Card */}
-        <div className="bg-white p-8 rounded-xl card-shadow border border-surface-variant/20">
+        <div className="bg-white p-8 rounded-xl card-shadow border border-surface-variant/20 interactive-card animate-fade-in-up">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <h2 className="text-2xl font-bold mb-4 text-primary font-headline">
@@ -140,7 +140,7 @@ export default function MountPrauPage() {
         </div>
 
         {/* Facilities Grid */}
-        <section>
+        <section className="animate-fade-in-up">
           <h3 className="text-sm font-bold uppercase tracking-[0.15rem] text-secondary mb-4 px-2">
             Fasilitas Ekspedisi
           </h3>
@@ -189,7 +189,7 @@ export default function MountPrauPage() {
           </div>
           <Link
             href="/booking/register"
-            className="flex-1 md:flex-none forest-gradient text-white py-4 px-12 rounded-xl font-bold text-lg shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3"
+            className="flex-1 md:flex-none forest-gradient text-white py-4 px-12 rounded-xl font-bold text-lg shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 interactive-btn"
           >
             <span>Pesan Pendakian Sekarang</span>
             <span className="material-symbols-outlined">mountain_flag</span>

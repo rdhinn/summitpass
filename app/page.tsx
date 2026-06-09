@@ -12,7 +12,7 @@ export default function HomePage() {
   return (
     <div className="pt-24 pb-8 max-w-5xl mx-auto space-y-10">
       {/* Hero Section */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[450px] flex flex-col justify-end p-8 mx-6">
+      <section className="relative rounded-3xl overflow-hidden min-h-[450px] flex flex-col justify-end p-8 mx-6 animate-fade-in">
         <div className="absolute inset-0 z-0">
           <img
             alt="Golden Sunrise Gunung Prau"
@@ -40,7 +40,7 @@ export default function HomePage() {
           <div className="pt-4">
             <Link
               href="/mountain/prau"
-              className="forest-gradient text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-primary/20 transition-all inline-flex items-center gap-2 group"
+              className="forest-gradient text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-primary/20 transition-all inline-flex items-center gap-2 group interactive-btn"
             >
               Pesan Ekspedisi Anda
               <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
@@ -52,7 +52,7 @@ export default function HomePage() {
       </section>
 
       {/* SEO Intro Section */}
-      <section className="space-y-6 bg-white p-8 rounded-3xl shadow-sm border border-outline-variant/30 mx-6">
+      <section className="space-y-6 bg-white p-8 rounded-3xl shadow-sm border border-outline-variant/30 mx-6 animate-fade-in-up">
         <div className="max-w-3xl">
           <h2 className="font-headline font-bold text-2xl tracking-tight text-primary mb-4">
             Temukan Puncak Paling Ikonik di Dieng
@@ -100,7 +100,7 @@ export default function HomePage() {
         <h2 className="font-headline font-bold text-xl tracking-tight">
           Detail Ekspedisi
         </h2>
-        <div className="bg-surface-container-low rounded-3xl overflow-hidden shadow-sm border border-outline-variant/20">
+        <div className="bg-surface-container-low rounded-3xl overflow-hidden shadow-sm border border-outline-variant/20 interactive-card animate-fade-in-up">
           <div className="grid grid-cols-1 md:grid-cols-2">
             <div className="aspect-[4/3] md:aspect-auto relative overflow-hidden">
               <img
@@ -158,7 +158,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/mountain/prau"
-                  className="earth-gradient text-white px-6 py-3 rounded-xl font-bold"
+                  className="earth-gradient text-white px-6 py-3 rounded-xl font-bold interactive-btn"
                 >
                   Detail
                 </Link>
@@ -172,7 +172,7 @@ export default function HomePage() {
       <PartnerSection />
 
       {/* Live Conditions HUD */}
-      <section className="bg-surface-bright/70 backdrop-blur-xl border border-outline-variant/30 rounded-3xl p-6 flex flex-wrap justify-around gap-6 shadow-sm mx-6">
+      <section className="bg-surface-bright/70 backdrop-blur-xl border border-outline-variant/30 rounded-3xl p-6 flex flex-wrap justify-around gap-6 shadow-sm mx-6 animate-fade-in-up">
         <div className="text-center">
           <span className="material-symbols-outlined text-primary block mb-1">
             altitude
@@ -212,7 +212,7 @@ export default function HomePage() {
       <div className="fixed bottom-24 right-6 z-40">
         <Link
           href="/mountain/prau"
-          className="forest-gradient w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-all duration-200"
+          className="forest-gradient w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-all duration-200 animate-float"
         >
           <span className="material-symbols-outlined">calendar_today</span>
         </Link>
