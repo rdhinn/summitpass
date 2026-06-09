@@ -103,6 +103,30 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Apakah Anda yakin ingin menghapus akun Anda secara permanen? Semua data profil, tiket booking, dan riwayat Anda akan terhapus selamanya dari sistem dan tidak dapat dipulihkan."
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Akun Anda berhasil dihapus.");
+        window.dispatchEvent(new Event("summitpass_auth"));
+        router.push("/register");
+      } else {
+        alert(data.message || "Gagal menghapus akun.");
+      }
+    } catch (e) {
+      console.error("Delete account error:", e);
+      alert("Terjadi kesalahan koneksi saat menghapus akun.");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="pt-32 pb-32 flex flex-col items-center justify-center min-h-screen">
@@ -127,7 +151,7 @@ export default function DashboardPage() {
             Status Akun: <span className="bg-primary-container text-primary px-3 py-0.5 rounded-full font-bold text-xs">{user.status_akun}</span>
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Link
             href="/mountain/prau"
             className="forest-gradient text-white px-5 py-3 rounded-2xl font-bold text-sm shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
@@ -137,10 +161,17 @@ export default function DashboardPage() {
           </Link>
           <button
             onClick={handleLogout}
-            className="bg-white border border-outline-variant/60 text-error px-5 py-3 rounded-2xl font-bold text-sm shadow-sm hover:bg-error/5 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            className="bg-white border border-outline-variant/60 text-on-surface-variant px-5 py-3 rounded-2xl font-bold text-sm shadow-sm hover:bg-surface-container/50 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
           >
             <span className="material-symbols-outlined text-sm">logout</span>
             Keluar Sesi
+          </button>
+          <button
+            onClick={handleDeleteAccount}
+            className="bg-white border border-error/30 text-error px-5 py-3 rounded-2xl font-bold text-sm shadow-sm hover:bg-error/5 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">delete_forever</span>
+            Hapus Akun
           </button>
         </div>
       </section>

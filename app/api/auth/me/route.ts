@@ -84,3 +84,43 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "Terjadi kesalahan server" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const cookies = Object.fromEntries(
+      cookieHeader.split(";").map((c) => c.trim().split("="))
+    );
+    const token = cookies["summitpass_token"];
+
+    if (!token) {
+      return NextResponse.json({ message: "Tidak terautentikasi" }, { status: 401 });
+    }
+
+    let decoded: DecodedToken;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
+    } catch (err) {
+      return NextResponse.json({ message: "Token tidak valid atau kedaluwarsa" }, { status: 401 });
+    }
+
+    if (decoded.role !== "user") {
+      return NextResponse.json({ message: "Hanya Hiker yang dapat menghapus akunnya sendiri" }, { status: 403 });
+    }
+
+    // Delete related OTP records and User record in transaction
+    await prisma.$transaction([
+      prisma.otp.deleteMany({ where: { user_id: decoded.userId } }),
+      prisma.user.delete({ where: { user_id: decoded.userId } }),
+    ]);
+
+    // Clear session cookie
+    const response = NextResponse.json({ message: "Akun berhasil dihapus permanen" });
+    response.cookies.set("summitpass_token", "", { maxAge: 0, path: "/" });
+
+    return response;
+  } catch (error) {
+    console.error("Delete user account error:", error);
+    return NextResponse.json({ message: "Terjadi kesalahan server" }, { status: 500 });
+  }
+}

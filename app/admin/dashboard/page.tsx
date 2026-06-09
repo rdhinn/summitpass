@@ -179,6 +179,30 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleDeleteUser = async (userId: string, nama: string) => {
+    const confirmDelete = window.confirm(`Apakah Anda yakin ingin menghapus akun Hiker "${nama}" secara permanen? Semua data profil, booking, dan notifikasi miliknya akan terhapus.`);
+    if (!confirmDelete) return;
+
+    setIsUpdating(true);
+    try {
+      const res = await fetch(`/api/admin/users?userId=${userId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFeedbackMessage(`Akun Hiker "${nama}" berhasil dihapus.`);
+        fetchAdminData();
+      } else {
+        alert(data.message || "Gagal menghapus user.");
+      }
+    } catch (e) {
+      console.error("Delete user error:", e);
+      alert("Terjadi kesalahan koneksi saat menghapus user.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="pt-32 pb-32 flex flex-col items-center justify-center min-h-screen">
@@ -436,6 +460,7 @@ export default function AdminDashboardPage() {
                   <th className="p-4">Lahir / Gol. Darah</th>
                   <th className="p-4">Kontak Darurat</th>
                   <th className="p-4">Tanggal Bergabung</th>
+                  <th className="p-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/20">
@@ -486,11 +511,21 @@ export default function AdminDashboardPage() {
                           year: "numeric",
                         })}
                       </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => handleDeleteUser(u.user_id, u.nama)}
+                          disabled={isUpdating}
+                          className="bg-error/10 hover:bg-error/20 text-error px-3 py-2 rounded-xl font-bold transition-all cursor-pointer text-[10px] uppercase inline-flex items-center gap-1 ml-auto"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">delete</span>
+                          Hapus
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-on-surface-variant italic">
+                    <td colSpan={7} className="p-8 text-center text-on-surface-variant italic">
                       Belum ada Hiker yang mendaftar.
                     </td>
                   </tr>
