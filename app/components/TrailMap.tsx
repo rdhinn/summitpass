@@ -53,6 +53,25 @@ export default function TrailMap() {
   });
 
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mountainLive, setMountainLive] = useState<any>(null);
+
+  // Fetch live mountain stats inside TrailMap
+  useEffect(() => {
+    const fetchLiveMountain = async () => {
+      try {
+        const res = await fetch("/api/mountains/prau/realtime");
+        if (res.ok) {
+          const json = await res.json();
+          setMountainLive(json);
+        }
+      } catch (e) {
+        console.error("Failed to fetch live mountain stats in TrailMap:", e);
+      }
+    };
+    fetchLiveMountain();
+    const interval = setInterval(fetchLiveMountain, 30000); // 30s auto-refresh
+    return () => clearInterval(interval);
+  }, []);
 
   const mapRef = useRef<any>(null);
   const hikerMarkerRef = useRef<any>(null);
@@ -315,56 +334,104 @@ export default function TrailMap() {
         <div className="lg:col-span-4 space-y-6 flex flex-col justify-between">
           {/* Real-time Status Card */}
           <div className="bg-surface-container/50 border border-outline-variant/30 rounded-2xl p-5 space-y-4">
-            <h4 className="font-bold text-xs text-secondary uppercase tracking-widest border-b border-outline-variant/20 pb-2">
-              Status Real-Time
+            <h4 className="font-bold text-xs text-secondary uppercase tracking-widest border-b border-outline-variant/20 pb-2 flex justify-between items-center">
+              <span>Status Real-Time</span>
+              {mountainLive && (
+                <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider ${
+                  mountainLive.status_jalur === "Buka" 
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200" 
+                    : "bg-red-100 text-red-800 border border-red-200"
+                }`}>
+                  Jalur {mountainLive.status_jalur}
+                </span>
+              )}
             </h4>
 
+            {/* Part A: Personal Hike Tracking */}
             <div className="space-y-3">
               <div>
-                <span className="block text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">Lokasi Saat Ini</span>
-                <span className="text-sm font-headline font-black text-primary truncate block">
+                <span className="block text-[8px] uppercase tracking-wider text-on-surface-variant font-bold">Lokasi Hiker Anda</span>
+                <span className="text-xs font-headline font-black text-primary truncate block">
                   {progress === 100 ? "Tiba di Puncak Prau!" : currentCheckpoint.name}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <span className="block text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">Ketinggian</span>
-                  <span className="text-base font-black font-headline text-on-surface font-mono">{liveStats.elevation} <span className="text-[10px] font-normal">mdpl</span></span>
+                  <span className="block text-[8px] uppercase tracking-wider text-on-surface-variant font-bold">Ketinggian GPS</span>
+                  <span className="text-sm font-black font-headline text-on-surface font-mono">{liveStats.elevation} <span className="text-[9px] font-normal">mdpl</span></span>
                 </div>
                 <div>
-                  <span className="block text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">Suhu Ketinggian</span>
-                  <span className="text-base font-black font-headline text-on-surface font-mono">{liveStats.temp}°C</span>
+                  <span className="block text-[8px] uppercase tracking-wider text-on-surface-variant font-bold">Suhu Posisi</span>
+                  <span className="text-sm font-black font-headline text-on-surface font-mono">{liveStats.temp}°C</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <span className="block text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">Jarak Tempuh</span>
-                  <span className="text-base font-black font-headline text-on-surface font-mono">{liveStats.distance} <span className="text-[10px] font-normal">km</span></span>
+                  <span className="block text-[8px] uppercase tracking-wider text-on-surface-variant font-bold">Jarak Tempuh</span>
+                  <span className="text-sm font-black font-headline text-on-surface font-mono">{liveStats.distance} <span className="text-[9px] font-normal">km</span></span>
                 </div>
                 <div>
-                  <span className="block text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">Estimasi Sisa</span>
-                  <span className="text-base font-black font-headline text-on-surface font-mono">
+                  <span className="block text-[8px] uppercase tracking-wider text-on-surface-variant font-bold">Estimasi Sisa</span>
+                  <span className="text-sm font-black font-headline text-on-surface font-mono">
                     {Math.floor(liveStats.timeRemaining / 60)}j {liveStats.timeRemaining % 60}m
                   </span>
                 </div>
               </div>
+
+              {/* Progress Bar */}
+              <div className="space-y-1.5 pt-1.5 border-t border-outline-variant/10">
+                <div className="flex justify-between items-center text-[9px] font-bold text-secondary">
+                  <span>PROGRESS PENDAKIAN</span>
+                  <span>{Math.round(progress)}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div
+                    className="h-full forest-gradient transition-all duration-100 ease-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="space-y-1.5 pt-2">
-              <div className="flex justify-between items-center text-[10px] font-bold text-secondary">
-                <span>PROGRESS MENDAKI</span>
-                <span>{Math.round(progress)}%</span>
+            {/* Part B: Pos Pantau Mountain Conditions */}
+            {mountainLive && (
+              <div className="border-t border-outline-variant/20 pt-4 space-y-3">
+                <span className="text-[9px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[13px] animate-pulse text-error">sensors</span>
+                  Pos Pantau Live
+                </span>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-white p-2.5 rounded-xl border border-primary/5 shadow-sm">
+                    <span className="block text-[7px] uppercase tracking-wider text-outline mb-0.5">Sisa Kuota Hari Ini</span>
+                    <span className="text-xs font-black text-primary font-mono">{mountainLive.remaining_quota}</span>
+                    <span className="text-[8px] text-outline font-normal"> / {mountainLive.quota} org</span>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-xl border border-primary/5 shadow-sm">
+                    <span className="block text-[7px] uppercase tracking-wider text-outline mb-0.5">Kepadatan Jalur</span>
+                    <span className={`text-xs font-black block mt-0.5 ${
+                      mountainLive.estimasi_keramaian === "Ramai" ? "text-error" : 
+                      mountainLive.estimasi_keramaian === "Sedang" ? "text-amber-600" : "text-emerald-700"
+                    }`}>
+                      {mountainLive.estimasi_keramaian}
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-xl border border-primary/5 shadow-sm">
+                    <span className="block text-[7px] uppercase tracking-wider text-outline mb-0.5">Cuaca Terkini</span>
+                    <span className="text-[10px] font-black text-on-surface block truncate mt-0.5">{mountainLive.cuaca}</span>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-xl border border-primary/5 shadow-sm">
+                    <span className="block text-[7px] uppercase tracking-wider text-outline mb-0.5 font-bold">Suhu Puncak</span>
+                    <span className="text-[10px] font-black text-on-surface block font-mono mt-0.5">{mountainLive.suhu_camp}°C</span>
+                  </div>
+                </div>
               </div>
-              <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                <div
-                  className="h-full forest-gradient transition-all duration-100 ease-out"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Safety Checkpoint Checklist */}

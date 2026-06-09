@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import CalendarWidget from "./CalendarWidget";
 import TrailMap from "@/app/components/TrailMap";
-import RealtimeStatus from "./RealtimeStatus";
 
 export const metadata: Metadata = {
   title: "Gunung Prau - SummitPass | Pengalaman Golden Sunrise",
@@ -71,32 +70,29 @@ export default function MountPrauPage() {
                 luar biasa dari puncak ganda—Gunung Sindoro dan Gunung Sumbing.
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="bg-surface-variant/30 p-6 rounded-xl space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold uppercase tracking-widest text-secondary">
-                    Tingkat Kesulitan
-                  </span>
-                  <span className="text-primary font-bold">Mudah - Sedang</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold uppercase tracking-widest text-secondary">
-                    Jalur Utama
-                  </span>
-                  <span className="text-on-surface font-medium">
-                    Patakbanteng
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold uppercase tracking-widest text-secondary">
-                    Izin SIMAKSI
-                  </span>
-                  <span className="text-on-surface font-medium">
-                    Termasuk SIMAKSI
-                  </span>
-                </div>
+            <div className="bg-surface-variant/30 p-6 rounded-xl space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold uppercase tracking-widest text-secondary">
+                  Tingkat Kesulitan
+                </span>
+                <span className="text-primary font-bold">Mudah - Sedang</span>
               </div>
-              <RealtimeStatus />
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold uppercase tracking-widest text-secondary">
+                  Jalur Utama
+                </span>
+                <span className="text-on-surface font-medium">
+                  Patakbanteng
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold uppercase tracking-widest text-secondary">
+                  Izin SIMAKSI
+                </span>
+                <span className="text-on-surface font-medium">
+                  Termasuk SIMAKSI
+                </span>
+              </div>
             </div>
           </div>
         </div>
